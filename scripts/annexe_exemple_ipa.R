@@ -21,6 +21,8 @@ adezip(p, type = "out")
 
 rsa <- irsa(p, typi = 6)
 
+## RSA exclus des IPA ----
+
 g0_i <- rsa$rsa %>% 
 filter(rsacmd == '90' |
          typesej == 'B' |
@@ -64,7 +66,7 @@ classes_ipa <- tibble::tribble(
   "groupe_d_102", "Chirurgie  en  hospitalisation  complète ou  sans  nuitée  avec  transfert,  mutation  ou décès"
 )
 
-# Groupe A : Activités autorisées dans le champ obstétrique / néonatologie
+## Groupe A : Activités autorisées dans le champ obstétrique / néonatologie ----
 
 
 gA <- rsa$rsa %>% 
@@ -88,7 +90,8 @@ gA %>%
   count(var, libelle)
 
 
-# Groupe B : Activités autorisées SIOS
+## Groupe B : Activités autorisées SIOS ----
+
 gB_i <- rsa$rsa %>% 
   select(cle_rsa, rsacmd, ghm, dp) %>% 
   mutate(
@@ -150,6 +153,7 @@ nch <- rsa$actes %>%
 gB <- bind_rows(gB_i, nri, nch)
 
 gB[is.na(gB)] <- FALSE
+
 gB %>%
   anti_join(bind_rows(gA, g0)) %>% 
   tidyr::gather(var, val, - cle_rsa) %>% 
@@ -160,7 +164,8 @@ gB %>%
   count(var, libelle)  %>% 
   knitr::kable()
 
-
+## Groupe C : Autres activités autorisées de médecine et chirurgie spécialisées ----
+  
 car_a <- annexes %>% 
   filter(grepl('cardio', titre)) %>% 
   distinct(liste, anseqta)
@@ -171,6 +176,7 @@ car <- rsa$actes %>%
   inner_join(car_a, by = c('cdccam' = 'liste', 'anseqta' = 'anseqta')) %>% 
   distinct(cle_rsa) %>% 
   mutate(groupe_c_76 = 1)
+
 
 gC_i <- rsa$rsa %>% 
   select(cle_rsa, rsacmd,rsatype, ghm,noghs, dp, dr) %>% 
@@ -197,6 +203,8 @@ gC %>%
   left_join(classes_ipa, by = 'var') %>% 
   count(var, libelle)  %>% 
   knitr::kable()
+
+## Groupe D : Médecine et chirurgie (autres) ----
 
 # ...
 
