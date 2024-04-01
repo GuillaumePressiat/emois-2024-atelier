@@ -6,6 +6,11 @@
 .RData
 .RDataTmp
 
+data/*.zip
+data/290000017.*
+
+.DS_Store
+
 # User-specific files
 .Ruserdata
 
